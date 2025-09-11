@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .folder-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Rotates the arrow icon when the folder is open */
+        .folder-icon.open {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center font-sans p-4">
+    <!-- Main container that now uses the full width of the screen on all devices -->
+    <div class="w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6 text-center text-indigo-600 dark:text-indigo-400">Document Library</h1>
+        
+        <div id="library-container" class="space-y-4">
+            <!-- Folder 1: Project Documents -->
+            <div class="folder bg-gray-50 dark:bg-gray-700 rounded-md p-4 transition-all duration-300 ease-in-out hover:shadow-lg cursor-pointer border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between" onclick="toggleFolder('folder1')">
+                    <div class="flex items-center space-x-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 folder-icon transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"></path>
+                        </svg>
+                        <span class="text-xl font-semibold">Project Documents</span>
+                    </div>
+                    <svg id="folder1-arrow" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <ul id="folder1" class="hidden pl-8 mt-4 space-y-2">
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Project Overview.html</a></li>
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Design Mockups.html</a></li>
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Technical Specifications.html</a></li>
+                </ul>
+            </div>
+
+            <!-- Folder 2: Marketing Materials -->
+            <div class="folder bg-gray-50 dark:bg-gray-700 rounded-md p-4 transition-all duration-300 ease-in-out hover:shadow-lg cursor-pointer border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between" onclick="toggleFolder('folder2')">
+                    <div class="flex items-center space-x-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 folder-icon transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"></path>
+                        </svg>
+                        <span class="text-xl font-semibold">Marketing Materials</span>
+                    </div>
+                    <svg id="folder2-arrow" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <ul id="folder2" class="hidden pl-8 mt-4 space-y-2">
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Marketing Strategy.html</a></li>
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Brand Guidelines.html</a></li>
+                </ul>
+            </div>
+            
+            <!-- Folder 3: HR Documents -->
+            <div class="folder bg-gray-50 dark:bg-gray-700 rounded-md p-4 transition-all duration-300 ease-in-out hover:shadow-lg cursor-pointer border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between" onclick="toggleFolder('folder3')">
+                    <div class="flex items-center space-x-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 folder-icon transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"></path>
+                        </svg>
+                        <span class="text-xl font-semibold">HR Documents</span>
+                    </div>
+                    <svg id="folder3-arrow" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <ul id="folder3" class="hidden pl-8 mt-4 space-y-2">
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Employee Handbook.html</a></li>
+                    <li><a href="#" class="block text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Holiday Policy.html</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFolder(folderId) {
+            const folderContent = document.getElementById(folderId);
+            const folderArrow = document.getElementById(folderId + '-arrow');
+            
+            // Close any open folder except the one being clicked
+            document.querySelectorAll('#library-container .folder').forEach(folder => {
+                const currentFolderId = folder.querySelector('ul').id;
+                if (currentFolderId !== folderId && !document.getElementById(currentFolderId).classList.contains('hidden')) {
+                    document.getElementById(currentFolderId).classList.add('hidden');
+                    document.getElementById(currentFolderId + '-arrow').classList.remove('rotate-90');
+                }
+            });
+
+            folderContent.classList.toggle('hidden');
+            folderArrow.classList.toggle('rotate-90');
+        }
+    </script>
+</body>
+</html>

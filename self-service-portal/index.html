@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Service Portal | United Cloud Haven</title>
+    <link rel="icon" type="image/png" href="../uch.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1a202c;
+        }
+        .sidebar {
+            background-color: #5c1b69; /* Dark purple */
+            color: #fff;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 2rem;
+            z-index: 50;
+        }
+        .sidebar-icon {
+            width: 2rem;
+            height: 2rem;
+            margin-bottom: 2.5rem;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-icon:hover {
+            transform: scale(1.1);
+        }
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .nav-link:hover {
+            opacity: 1;
+        }
+        .top-bar {
+            background-color: #5c1b69;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0; /* Full width on mobile */
+            right: 0;
+            height: 64px;
+            z-index: 40;
+        }
+        @media (min-width: 768px) {
+            .top-bar {
+                left: 80px; /* Offset for sidebar on desktop */
+                justify-content: flex-end; /* Align right on desktop */
+            }
+        }
+        .main-content {
+            padding: 2rem;
+            padding-top: 6rem; /* Space for the fixed top bar */
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+        .content-card {
+            background-color: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+        .hero-section {
+            background-color: #efdff5; /* Lighter purple */
+            padding: 2.5rem;
+        }
+        .service-card {
+            background-color: #f7f3f9; /* Even lighter purple */
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        .service-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: #5c1b69;
+            margin-bottom: 0.5rem;
+        }
+        .right-panel {
+            background-color: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+        .panel-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        .panel-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .link-item:hover {
+            background-color: #f7f3f9;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /* Custom scroll behavior for smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Mobile-specific menu styles */
+        #mobile-menu {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #5c1b69;
+            color: #fff;
+            padding: 1rem;
+            z-index: 45;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(-100%);
+            display: none; /* Controlled by JS */
+        }
+        #mobile-menu.active {
+            display: flex;
+            transform: translateY(0);
+        }
+        #mobile-menu .nav-link {
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #mobile-menu .nav-link:last-child {
+            border-bottom: none;
+        }
+        #mobile-menu .nav-link svg {
+            margin-right: 1rem;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Left Sidebar (Desktop View) -->
+    <div class="sidebar hidden md:flex">
+        <a href="Documents/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM5 5v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z"/></svg>Documents</a>
+        <a href="Help/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zM12 8a1 1 0 100 2 1 1 0 000-2zM12 12a1 1 0 100 2 1 1 0 000-2zM12 16a1 1 0 100 2 1 1 0 000-2z"/></svg>Help</a>
+        <a href="Info/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zm-1-12a1 1 0 012 0v6a1 1 0 01-2 0v-6zm0 8a1 1 0 012 0 1 1 0 01-2 0z"/></svg>Info</a>
+    </div>
+
+    <!-- Top Bar & Main Content -->
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <div class="top-bar">
+            <!-- Mobile menu toggle button -->
+            <button id="mobile-menu-toggle" class="text-white text-lg font-semibold md:hidden">Menu</button>
+        </div>
+        
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="Documents/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM5 5v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z"/></svg>Documents</a>
+            <a href="Help/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zM12 8a1 1 0 100 2 1 1 0 000-2zM12 12a1 1 0 100 2 1 1 0 000-2zM12 16a1 1 0 100 2 1 1 0 000-2z"/></svg>Help</a>
+            <a href="Info/" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zm-1-12a1 1 0 012 0v6a1 1 0 01-2 0v-6zm0 8a1 1 0 012 0 1 1 0 01-2 0z"/></svg>Info</a>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="flex-grow flex flex-col lg:flex-row main-content space-y-8 lg:space-y-0 lg:space-x-8">
+            <div id="dashboard-content" class="flex-grow space-y-8">
+                <!-- Latest News Section -->
+                <div class="content-card">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Latest News & Updates</h2>
+                        <a href="#" id="see-all-news-link" class="text-purple-600 font-semibold text-sm">See all &rarr;</a>
+                    </div>
+                    <div id="latest-news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Articles will be dynamically populated here -->
+                    </div>
+                </div>
+
+                <!-- Quick Links Section -->
+                <div id="quick-links-card" class="content-card">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Quick Links</h2>
+                        <a href="#" id="see-all-links" class="text-purple-600 font-semibold text-sm">See all &rarr;</a>
+                    </div>
+                    
+                    <!-- Dropdown for Quick Links -->
+                    <div class="mb-6">
+                        <select id="quick-links-dropdown" class="w-full md:w-auto px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-purple-600">
+                            <option value="most-used">Most Used</option>
+                            <option value="benefits">Benefits</option>
+                            <option value="hr">Human Resources</option>
+                            <option value="learning">Learning</option>
+                            <option value="talent">Talent</option>
+                        </select>
+                    </div>
+
+                    <!-- Quick Links Content -->
+                    <div id="quick-links-content" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Content will be dynamically populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Quick Links Section (initially hidden) -->
+            <div id="all-quick-links-section" class="content-card flex-grow space-y-8" style="display: none;">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">All Quick Links</h2>
+                    <a href="#" id="back-to-dashboard" class="text-purple-600 font-semibold text-sm">&larr; Back to Dashboard</a>
+                </div>
+                <div id="all-quick-links-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- All links will be dynamically populated here -->
+                </div>
+            </div>
+
+            <!-- All News Articles Section (initially hidden) -->
+            <div id="all-news-section" class="content-card flex-grow space-y-8" style="display: none;">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">All News & Updates</h2>
+                    <a href="#" id="back-to-dashboard-news-link" class="text-purple-600 font-semibold text-sm">&larr; Back to Dashboard</a>
+                </div>
+                <div id="all-news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Articles will be dynamically populated here -->
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="w-full lg:w-96 flex-shrink-0 space-y-8">
+                <div class="right-panel">
+                    <div class="panel-section">
+                        <h3 class="text-lg font-bold">Daily Reflection</h3>
+                        <p class="text-sm italic mt-2 text-gray-700">"It is not what to do, but how much love we put into the doing, we can do no greats, only small things with great love."</p>
+                        <p class="text-xs text-gray-500 mt-1">- Mother Teresa</p>
+                    </div>
+                    <div class="panel-section">
+                        <h3 class="text-lg font-bold">Time & Attendance</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-700">PTO Total: <span class="font-semibold text-purple-600">344.7</span></p>
+                            <p class="text-sm text-gray-700">Hire Date: <span class="font-semibold text-purple-600">March 17, 2008</span></p>
+                        </div>
+                    </div>
+                    <div class="panel-section">
+                        <h3 class="text-lg font-bold">United Cloud Haven Events</h3>
+                        <p class="text-sm mt-2 text-gray-700">My HR Information Support Line Session</p>
+                        <p class="text-xs text-gray-500 mt-1">June 24-28 | 9:00 - 10:30 AM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboardContent = document.getElementById('dashboard-content');
+            const allQuickLinksSection = document.getElementById('all-quick-links-section');
+            const allNewsSection = document.getElementById('all-news-section');
+            const quickLinksContent = document.getElementById('quick-links-content');
+            const quickLinksDropdown = document.getElementById('quick-links-dropdown');
+            const allQuickLinksContainer = document.getElementById('all-quick-links-container');
+            const seeAllLinksBtn = document.getElementById('see-all-links');
+            const backToDashboardBtn = document.getElementById('back-to-dashboard');
+            const seeAllNewsLink = document.getElementById('see-all-news-link');
+            const backToDashboardNewsLink = document.getElementById('back-to-dashboard-news-link');
+            const latestNewsContainer = document.getElementById('latest-news-container');
+            const allNewsContainer = document.getElementById('all-news-container');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            // Toggle mobile menu visibility
+            mobileMenuToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+            });
+
+            const newsArticlesData = [
+                {
+                    title: "New Office Safety & Guidelines",
+                    date: "June 24, 2024",
+                    summary: "We've updated our office safety protocols to ensure a secure and healthy environment for everyone...",
+                    file: "office_safety_guide.md"
+                },
+                {
+                    title: "New Virtual Training Program for Managers",
+                    date: "June 20, 2024",
+                    summary: "Our new program provides comprehensive training on leadership, team management, and conflict resolution...",
+                    file: "virtual_training_program.md"
+                },
+                {
+                    title: "Join the Annual Community Volunteering Initiative",
+                    date: "June 15, 2024",
+                    summary: "We're partnering with local charities for our annual volunteering week. Sign up to make a difference...",
+                    file: "community_volunteering.md"
+                },
+                {
+                    title: "Introducing New Employee Wellness Resources",
+                    date: "June 10, 2024",
+                    summary: "Explore our expanded wellness program, including new gym discounts and mental health support services...",
+                    file: "wellness_resources.md"
+                },
+                {
+                    title: "Annual Tech Innovation Symposium Recap",
+                    date: "June 5, 2024",
+                    summary: "A summary of the key highlights and groundbreaking ideas presented at this year's symposium...",
+                    file: "tech_symposium_recap.md"
+                },
+            ];
+
+            const quickLinksData = {
+                'most-used': [
+                    { title: 'My Benefits', subtitle: 'MyCareer' },
+                    { title: 'Corrective Action Form (CAF)', subtitle: 'Human Resources' },
+                    { title: 'Employment Verification (The Work Number)', subtitle: 'Human Resources' },
+                    { title: 'Employee Change Form (ECF)', subtitle: 'Human Resources' },
+                    { title: 'My Journey', subtitle: 'Learning' },
+                ],
+                'benefits': [
+                    { title: 'Health Insurance', subtitle: 'Benefits' },
+                    { title: '401K Enrollment', subtitle: 'Benefits' },
+                    { title: 'Vision & Dental', subtitle: 'Benefits' },
+                ],
+                'hr': [
+                    { title: 'Human Resources Portal', subtitle: 'HR' },
+                    { title: 'Employee Handbook', subtitle: 'HR' },
+                    { title: 'Leave of Absence Request', subtitle: 'HR' },
+                ],
+                'learning': [
+                    { title: 'Skillsoft Learning Center', subtitle: 'Learning' },
+                    { title: 'Career Development Paths', subtitle: 'Learning' },
+                ],
+                'talent': [
+                    { title: 'Performance Reviews', subtitle: 'Talent' },
+                    { title: 'Promotion Guidelines', subtitle: 'Talent' },
+                ]
+            };
+
+            const createNewsCard = (article) => {
+                const card = document.createElement('div');
+                card.className = 'rounded-2xl bg-gray-50 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-300';
+                card.innerHTML = `
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">${article.title}</h3>
+                        <p class="text-sm text-gray-500 mt-1">Published: ${article.date}</p>
+                        <p class="text-gray-600 mt-4 text-sm leading-relaxed">${article.summary}</p>
+                    </div>
+                    <button onclick="handleArticleClick('${article.file}', '${article.title}')" class="mt-6 px-4 py-2 bg-purple-600 text-white font-medium rounded-full text-sm hover:bg-purple-700 transition-colors">Read More</button>
+                `;
+                return card;
+            };
+
+            const renderLatestNews = () => {
+                latestNewsContainer.innerHTML = '';
+                newsArticlesData.slice(0, 3).forEach(article => {
+                    latestNewsContainer.appendChild(createNewsCard(article));
+                });
+            };
+
+            const renderAllNews = () => {
+                allNewsContainer.innerHTML = '';
+                newsArticlesData.forEach(article => {
+                    allNewsContainer.appendChild(createNewsCard(article));
+                });
+            };
+
+            const createLinkItem = (title, subtitle) => {
+                const item = document.createElement('div');
+                item.className = 'link-item';
+                item.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-purple-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <div class="flex-grow">
+                        <h4 class="text-base font-medium">${title}</h4>
+                        <p class="text-xs text-gray-500">${subtitle}</p>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                     // Replaced alert with a custom message box for better UX
+                    const messageBox = document.createElement('div');
+                    messageBox.className = 'fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50';
+                    messageBox.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                            <h4 class="text-lg font-bold mb-2">Link Selected</h4>
+                            <p>You clicked on: ${title}</p>
+                            <button class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md" onclick="this.parentElement.parentElement.remove()">Close</button>
+                        </div>
+                    `;
+                    document.body.appendChild(messageBox);
+                });
+                return item;
+            };
+            
+            // Function to render quick links based on dropdown selection
+            const renderQuickLinks = (category) => {
+                quickLinksContent.innerHTML = '';
+                const links = quickLinksData[category] || [];
+                links.forEach(link => {
+                    const item = createLinkItem(link.title, link.subtitle);
+                    quickLinksContent.appendChild(item);
+                });
+            };
+
+            // Function to render all quick links
+            const renderAllQuickLinks = () => {
+                allQuickLinksContainer.innerHTML = '';
+                let allLinks = [];
+                for (const category in quickLinksData) {
+                    allLinks = allLinks.concat(quickLinksData[category]);
+                }
+                allLinks.forEach(link => {
+                    const item = createLinkItem(link.title, link.subtitle);
+                    allQuickLinksContainer.appendChild(item);
+                });
+            };
+
+            // Show all quick links section and hide dashboard
+            const showAllLinksView = (event) => {
+                event.preventDefault(); // Prevent default anchor behavior
+                dashboardContent.style.display = 'none';
+                allNewsSection.style.display = 'none';
+                allQuickLinksSection.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // Show dashboard and hide all quick links/news sections
+            const showDashboardView = (event) => {
+                event.preventDefault();
+                dashboardContent.style.display = 'block';
+                allQuickLinksSection.style.display = 'none';
+                allNewsSection.style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // Show all news section and hide dashboard
+            const showAllNewsView = (event) => {
+                event.preventDefault();
+                dashboardContent.style.display = 'none';
+                allQuickLinksSection.style.display = 'none';
+                allNewsSection.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // Helper function for showing a message box
+            window.handleArticleClick = function(file, title) {
+                // If it's the "Office Safety" file, call the special function
+                if (file === 'office_safety_guide.md') {
+                    showFile(file);
+                    return;
+                }
+                
+                // Otherwise, show the generic message box
+                const messageBox = document.createElement('div');
+                messageBox.className = 'fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50';
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                        <h4 class="text-lg font-bold mb-2">Article Selected</h4>
+                        <p>You clicked on: ${title}</p>
+                        <button class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md" onclick="this.parentElement.parentElement.remove()">Close</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+            }
+
+            // Initial render of news and quick links
+            renderLatestNews();
+            renderAllNews();
+            renderQuickLinks(quickLinksDropdown.value);
+            renderAllQuickLinks();
+
+            // Add event listeners
+            quickLinksDropdown.addEventListener('change', (event) => {
+                renderQuickLinks(event.target.value);
+            });
+            seeAllLinksBtn.addEventListener('click', showAllLinksView);
+            backToDashboardBtn.addEventListener('click', showDashboardView);
+            seeAllNewsLink.addEventListener('click', showAllNewsView);
+            backToDashboardNewsLink.addEventListener('click', showDashboardView);
+        });
+    </script>
+</body>
+</html>
